@@ -54,7 +54,6 @@ class ProductPage {
     Logger.step(`Selecting size: ${size}`);
     const btn = await this.h.findByText(size, 'button');
     await this.h.click(btn);
-    await this.h.sleep(300);
   }
 
   async selectColorByIndex(index = 0) {

@@ -4,67 +4,61 @@
 # ============================================================
 
 # --- Credentials ---
-# Set these as GitHub Actions secrets: BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY
-# For local runs, export them in your shell or create a .env file (never commit .env)
+# Set BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY as environment variables
+# or GitHub Actions secrets — never hardcode credentials here
 userName: ${BROWSERSTACK_USERNAME}
 accessKey: ${BROWSERSTACK_ACCESS_KEY}
 
 # --- Project & Build Metadata ---
 projectName: FashionStack Ecommerce
 buildName: "FashionStack Full Suite - ${BUILD_ID:-local}"
-buildTag: "regression"
+buildTag: regression
 
 # --- Test Framework ---
 framework: mocha
 
 # --- Parallelism ---
-parallelsPerPlatform: 1
+# Run 2 suites in parallel per platform for faster overall execution
+parallelsPerPlatform: 2
 
 # --- 5 Browser/Device Combinations ---
 # 2 fixed (Desktop Chrome + Mobile Chrome for Percy) + 3 dynamic
-browsers:
+platforms:
   # Fixed: Desktop Chrome (Percy baseline)
-  - browser: chrome
-    browser_version: latest
-    os: Windows
-    os_version: 11
+  - os: Windows
+    osVersion: 11
+    browserName: Chrome
+    browserVersion: latest
 
   # Fixed: Mobile Chrome (Percy mobile baseline)
-  - device: Samsung Galaxy S23
-    os_version: 13.0
-    browser: chrome
-    browserName: chrome
+  - deviceName: Samsung Galaxy S23
+    osVersion: 13.0
+    browserName: Chrome
 
   # Dynamic combo 1
-  - browser: firefox
-    browser_version: latest
-    os: Windows
-    os_version: 10
+  - os: Windows
+    osVersion: 10
+    browserName: Firefox
+    browserVersion: latest
 
   # Dynamic combo 2
-  - browser: safari
-    browser_version: latest
-    os: OS X
-    os_version: Ventura
+  - os: OS X
+    osVersion: Ventura
+    browserName: Safari
+    browserVersion: latest
 
   # Dynamic combo 3
-  - device: iPhone 14
-    os_version: 16
-    browser: safari
-    browserName: safari
+  - deviceName: iPhone 14
+    osVersion: 16
+    browserName: Safari
 
 # --- BrowserStack Features ---
 
 # Test Observability & Reporting (TRA)
 testObservability: true
-testObservabilityOptions:
-  projectName: FashionStack Ecommerce
-  buildName: "FashionStack Full Suite - ${BUILD_ID:-local}"
 
 # Percy Visual Testing
 percy: true
-percyOptions:
-  enabled: true
 
 # Accessibility Testing
 accessibility: true
@@ -79,14 +73,12 @@ debug: true
 networkLogs: true
 consoleLogs: verbose
 seleniumLogs: true
-videoLogs: true
-telemetryLogs: true
+video: true
 
 # --- Self-Healing ---
 selfHeal: true
 
 # --- Session Settings ---
-sessionName: "FashionStack Test Session"
 idleTimeout: 300
 maskCommands:
   - setValues

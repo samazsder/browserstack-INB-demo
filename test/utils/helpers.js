@@ -248,13 +248,13 @@ class TestHelpers {
   }
 
   /**
-   * Take a Percy visual snapshot.
+   * Take a Percy visual screenshot (BrowserStack Automate requires percyScreenshot).
    * @param {string} name - Snapshot name
    */
   async percySnapshot(name) {
     try {
-      const percySnapshot = require('@percy/selenium-webdriver');
-      await percySnapshot(this.driver, name);
+      const { percyScreenshot } = require('@percy/selenium-webdriver');
+      await percyScreenshot(this.driver, name);
       Logger.percy(name);
     } catch (e) {
       Logger.warn(`Percy snapshot skipped (${name}): ${e.message}`);

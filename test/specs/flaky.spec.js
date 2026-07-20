@@ -271,8 +271,8 @@ describe('🔧 SELF-HEALING — BrowserStack Self-Heal Showcase', function () {
     await home.clickLogin();
     await home.h.annotate('SELF-HEAL TEST: Using placeholder="Enter your email" selector');
 
-    // placeholder="Enter your email" observed in Step 6
-    const emailInput = await home.h.findByCss('input[placeholder="Enter your email"]');
+    // placeholder="Enter your email" observed in Step 6 — use 30s timeout for mobile
+    const emailInput = await home.h.findByCss('input[placeholder="Enter your email"]', 30000);
     const visible = await emailInput.isDisplayed();
     Logger.assert(`Email input found via placeholder: ${visible}`);
     expect(visible).to.be.true;
