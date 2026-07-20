@@ -1,1 +1,0 @@
-{"package":false,"_":[],"timeout":"120000","reporter":"spec","opts":false,"config":false,"diff":true,"extension":["js","cjs","mjs"],"slow":75,"ui":"bdd","watch-ignore":["node_modules",".git"],"watchIgnore":["node_modules",".git"],"pass-on-failing-test-suite":false,"passOnFailingTestSuite":false,"spec":["test/specs/**/*.spec.js"],"$0":"mocha"}
