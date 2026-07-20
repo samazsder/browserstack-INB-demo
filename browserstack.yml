@@ -58,10 +58,12 @@ accessibilityOptions:
     needsReview: true
 
 # --- Detailed Logging ---
-debug: true
+# debug: true is intentionally disabled — it generates multi-GB usage-debug.log files
+# Enable only when actively debugging a specific session failure
+debug: false
 networkLogs: true
-consoleLogs: verbose
-seleniumLogs: true
+consoleLogs: errors
+seleniumLogs: false
 video: true
 
 # --- Self-Healing ---
