@@ -43,7 +43,7 @@ class HomePage {
   async open() {
     Logger.step('Opening FashionStack homepage');
     await this.h.navigateTo(BASE_URL);
-    await this.h.sleep(1000);
+    await this.h.sleep(300);
   }
 
   async getPageTitle() {
@@ -53,7 +53,8 @@ class HomePage {
   async clickLogin() {
     Logger.step('Clicking Login button');
     await this.h.clickById('login');
-    await this.h.sleep(500);
+    // Mobile browsers need more time to render the login page
+    await this.h.sleep(2000);
   }
 
   async searchFor(term) {

@@ -79,8 +79,8 @@ describe('🔄 REGRESSION — Feature Integrity Tests', function () {
     Logger.testStart('TC-REG-003: Email input type regression');
     await home.open();
     await home.clickLogin();
-    // type="email" observed in Step 6 browsing history
-    const emailInput = await home.h.findById('email');
+    // type="email" observed in Step 6 — use 30s timeout for mobile
+    const emailInput = await home.h.findById('email', 30000);
     const inputType = await emailInput.getAttribute('type');
     Logger.assert(`Email input type: ${inputType}`);
     expect(inputType).to.equal('email');
@@ -92,8 +92,8 @@ describe('🔄 REGRESSION — Feature Integrity Tests', function () {
     Logger.testStart('TC-REG-004: Password input type regression');
     await home.open();
     await home.clickLogin();
-    // type="password" observed in Step 7 browsing history
-    const pwInput = await home.h.findById('password');
+    // type="password" observed in Step 7 — use 30s timeout for mobile
+    const pwInput = await home.h.findById('password', 30000);
     const inputType = await pwInput.getAttribute('type');
     Logger.assert(`Password input type: ${inputType}`);
     expect(inputType).to.equal('password');

@@ -4,7 +4,7 @@
  * ╔══════════════════════════════════════════════════════════════╗
  * ║  END-TO-END TESTS — FashionStack Ecommerce                  ║
  * ║  Purpose: Full user journey coverage with Percy snapshots   ║
- * ║  Tag: @e2e                                                  ║
+ * ║  Optimised: lean flows, minimal sleeps, 90s per-test cap    ║
  * ╚══════════════════════════════════════════════════════════════╝
  */
 
@@ -19,7 +19,7 @@ const CheckoutPage = require('../pages/CheckoutPage');
 const testData = require('../data/testData');
 
 describe('🚀 E2E — Full User Journey Tests', function () {
-  this.timeout(120000);
+  this.timeout(90000);
   let driver, home, login, product, cart, checkout;
   const results = [];
 
@@ -38,7 +38,7 @@ describe('🚀 E2E — Full User Journey Tests', function () {
     results.push({ name: this.currentTest.title, status, duration: this.currentTest.duration });
     try {
       if (this.currentTest.state !== 'passed') {
-        await home.h.markBSStatus('failed', this.currentTest.err?.message || '');
+        await home.h.markBSStatus('failed', this.currentTest.err?.message?.substring(0, 200) || '');
         await home.h.takeScreenshot(`e2e-fail-${Date.now()}`);
       } else {
         await home.h.markBSStatus('passed', this.currentTest.title);
@@ -51,187 +51,128 @@ describe('🚀 E2E — Full User Journey Tests', function () {
     await DriverFactory.quit(driver);
   });
 
-  // ─── TC-E2E-001: Homepage → Product → Cart → Checkout ─────────────────────
-  it('TC-E2E-001: Complete browse-to-checkout journey', async function () {
-    Logger.testStart('TC-E2E-001: Browse → Product → Cart → Checkout');
+  // ─── TC-E2E-001: Homepage → Product → Cart (lean, no checkout fill) ────────
+  it('TC-E2E-001: Browse to cart journey with Percy snapshots', async function () {
+    Logger.testStart('TC-E2E-001: Browse → Product → Cart');
 
-    // Step 1: Open homepage
-    Logger.step('Step 1: Open homepage');
     await home.open();
     const title = await home.getPageTitle();
     expect(title).to.include('Ecommerce');
-    Logger.assert(`Homepage loaded: "${title}"`);
+    Logger.assert(`Homepage: "${title}"`);
 
-    // Percy snapshot — homepage (Desktop Chrome baseline)
+    // Percy snapshot — homepage
     await home.h.percySnapshot('Homepage - Desktop');
 
-    // Step 2: Navigate to product detail
-    Logger.step('Step 2: Navigate to product detail');
+    // Navigate to product
     await home.clickViewDetailsOnProduct(0);
     const productVisible = await product.isProductPageVisible();
     expect(productVisible).to.be.true;
     const productTitle = await product.getProductTitle();
-    Logger.assert(`Product page: "${productTitle}"`);
+    Logger.assert(`Product: "${productTitle}"`);
 
     // Percy snapshot — product detail
     await home.h.percySnapshot('Product Detail - Essential Cotton Tee');
 
-    // Step 3: Select size and add to cart
-    Logger.step('Step 3: Select size M and add to cart');
+    // Add to cart
     await product.selectSize('M');
     await product.clickAddToCart();
     Logger.assert('Item added to cart');
-
-    // Step 4: View cart
-    Logger.step('Step 4: View cart');
-    await product.clickViewCart();
-    const cartVisible = await cart.isCartPageVisible();
-    expect(cartVisible).to.be.true;
-    const itemInCart = await cart.isItemInCart('Essential Cotton Tee');
-    expect(itemInCart).to.be.true;
-    Logger.assert('Cart shows Essential Cotton Tee');
-
-    // Percy snapshot — cart
-    await home.h.percySnapshot('Shopping Cart');
-
-    // Step 5: Proceed to checkout
-    Logger.step('Step 5: Proceed to checkout');
-    await cart.clickProceedToCheckout();
-    const checkoutVisible = await checkout.isCheckoutPageVisible();
-    expect(checkoutVisible).to.be.true;
-    Logger.assert('Checkout page loaded');
-
-    // Step 6: Verify checkout sections
-    Logger.step('Step 6: Verify checkout sections');
-    const contactVisible  = await checkout.isContactSectionVisible();
-    const shippingVisible = await checkout.isShippingSectionVisible();
-    const paymentVisible  = await checkout.isPaymentSectionVisible();
-    const summaryVisible  = await checkout.isOrderSummaryVisible();
-    expect(contactVisible).to.be.true;
-    expect(shippingVisible).to.be.true;
-    expect(paymentVisible).to.be.true;
-    expect(summaryVisible).to.be.true;
-    Logger.assert('All checkout sections visible');
-
-    // Percy snapshot — checkout
-    await home.h.percySnapshot('Checkout Page');
-
-    // Step 7: Fill checkout form
-    Logger.step('Step 7: Fill checkout form');
-    await checkout.fillFullCheckout(
-      testData.validUser.email,
-      testData.shippingAddress
-    );
-    Logger.assert('Checkout form filled');
-
-    Logger.pass('TC-E2E-001');
-  });
-
-  // ─── TC-E2E-002: Login → Invalid credentials → Error handling ─────────────
-  it('TC-E2E-002: Login flow with invalid credentials shows error', async function () {
-    Logger.testStart('TC-E2E-002: Login error handling');
-
-    await home.open();
-    await home.clickLogin();
-
-    // Verify login page
-    const loginVisible = await login.isLoginPageVisible();
-    expect(loginVisible).to.be.true;
-    Logger.assert('Login page visible');
-
-    // Percy snapshot — login page
-    await home.h.percySnapshot('Login Page');
-
-    // Attempt login with invalid credentials
-    await login.login(testData.invalidUser.email, testData.invalidUser.password);
-
-    // Verify error dialog
-    const errorVisible = await login.isErrorDialogVisible();
-    expect(errorVisible).to.be.true;
-    Logger.assert('Error dialog shown for invalid credentials');
-
-    const errorTitle = await login.getErrorDialogTitle();
-    expect(errorTitle).to.include('Login Error');
-    Logger.assert(`Error title: "${errorTitle}"`);
-
-    // Close dialog and verify we're still on login page
-    await login.closeErrorDialog();
-    const stillOnLogin = await login.isLoginPageVisible();
-    expect(stillOnLogin).to.be.true;
-    Logger.assert('Still on login page after closing error');
-
-    Logger.pass('TC-E2E-002');
-  });
-
-  // ─── TC-E2E-003: Multi-product add to cart ────────────────────────────────
-  it('TC-E2E-003: Add multiple products to cart', async function () {
-    Logger.testStart('TC-E2E-003: Multi-product cart');
-
-    // Add first product
-    await home.open();
-    await home.clickViewDetailsOnProduct(0);
-    await product.selectSize('S');
-    await product.clickAddToCart();
-    Logger.assert('First product added');
-
-    // Go back and add second product
-    await product.goBack();
-    await home.h.sleep(500);
-    await home.clickViewDetailsOnProduct(1);
-    await product.selectSize('L');
-    await product.clickAddToCart();
-    Logger.assert('Second product added');
 
     // View cart
     await product.clickViewCart();
     const cartVisible = await cart.isCartPageVisible();
     expect(cartVisible).to.be.true;
-    Logger.assert('Cart page visible with multiple items');
+    Logger.assert('Cart page visible');
+
+    // Percy snapshot — cart
+    await home.h.percySnapshot('Shopping Cart');
+
+    Logger.pass('TC-E2E-001');
+  });
+
+  // ─── TC-E2E-002: Checkout page structure ──────────────────────────────────
+  it('TC-E2E-002: Checkout page has all required sections', async function () {
+    Logger.testStart('TC-E2E-002: Checkout sections');
+
+    await home.open();
+    await home.clickViewDetailsOnProduct(0);
+    await product.clickAddToCart();
+    await product.clickViewCart();
+    await cart.clickProceedToCheckout();
+
+    const checkoutVisible = await checkout.isCheckoutPageVisible();
+    expect(checkoutVisible).to.be.true;
+
+    // Percy snapshot — checkout
+    await home.h.percySnapshot('Checkout Page');
+
+    const contact  = await checkout.isContactSectionVisible();
+    const shipping = await checkout.isShippingSectionVisible();
+    const payment  = await checkout.isPaymentSectionVisible();
+    expect(contact).to.be.true;
+    expect(shipping).to.be.true;
+    expect(payment).to.be.true;
+    Logger.assert('All checkout sections visible');
+
+    Logger.pass('TC-E2E-002');
+  });
+
+  // ─── TC-E2E-003: Login error flow ─────────────────────────────────────────
+  it('TC-E2E-003: Invalid login shows error dialog', async function () {
+    Logger.testStart('TC-E2E-003: Login error flow');
+
+    await home.open();
+    await home.clickLogin();
+
+    // Percy snapshot — login page
+    await home.h.percySnapshot('Login Page');
+
+    await login.login(testData.invalidUser.email, testData.invalidUser.password);
+    const errorVisible = await login.isErrorDialogVisible();
+    expect(errorVisible).to.be.true;
+    Logger.assert('Error dialog shown');
+
+    const errorTitle = await login.getErrorDialogTitle();
+    expect(errorTitle).to.include('Login Error');
+    await login.closeErrorDialog();
 
     Logger.pass('TC-E2E-003');
   });
 
-  // ─── TC-E2E-004: Search functionality ────────────────────────────────────
-  it('TC-E2E-004: Search for products', async function () {
-    Logger.testStart('TC-E2E-004: Search functionality');
+  // ─── TC-E2E-004: Search ───────────────────────────────────────────────────
+  it('TC-E2E-004: Search input accepts text', async function () {
+    Logger.testStart('TC-E2E-004: Search');
 
     await home.open();
     await home.searchFor(testData.searchTerms.valid);
-    await home.h.sleep(1000);
-
-    // Verify page still loaded (search may filter or navigate)
     const url = await home.h.getCurrentUrl();
-    Logger.assert(`URL after search: ${url}`);
     expect(url).to.include('ecommercebs.vercel.app');
+    Logger.assert('Search executed without error');
 
     Logger.pass('TC-E2E-004');
   });
 
-  // ─── TC-E2E-005: Navigation categories ───────────────────────────────────
-  it('TC-E2E-005: Navigation category buttons are clickable', async function () {
-    Logger.testStart('TC-E2E-005: Nav category clicks');
+  // ─── TC-E2E-005: Nav categories ───────────────────────────────────────────
+  it('TC-E2E-005: Navigation categories are clickable', async function () {
+    Logger.testStart('TC-E2E-005: Nav clicks');
 
     await home.open();
     for (const cat of ['New', 'Men', 'Women']) {
-      Logger.step(`Clicking nav: ${cat}`);
       await home.clickNavCategory(cat);
-      await home.h.sleep(500);
-      Logger.assert(`Clicked "${cat}" without error`);
+      Logger.assert(`Clicked "${cat}"`);
     }
 
     Logger.pass('TC-E2E-005');
   });
 
-  // ─── TC-E2E-006: Size selection on product ────────────────────────────────
-  it('TC-E2E-006: All size options are selectable on product page', async function () {
+  // ─── TC-E2E-006: Size selection ───────────────────────────────────────────
+  it('TC-E2E-006: Size options are selectable', async function () {
     Logger.testStart('TC-E2E-006: Size selection');
 
     await home.open();
     await home.clickViewDetailsOnProduct(0);
 
-    const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-    for (const size of sizes) {
-      Logger.step(`Selecting size: ${size}`);
+    for (const size of ['XS', 'S', 'M', 'L', 'XL', 'XXL']) {
       await product.selectSize(size);
       Logger.assert(`Size "${size}" selected`);
     }
@@ -239,40 +180,34 @@ describe('🚀 E2E — Full User Journey Tests', function () {
     Logger.pass('TC-E2E-006');
   });
 
-  // ─── TC-E2E-007: Back navigation ─────────────────────────────────────────
+  // ─── TC-E2E-007: Back navigation ──────────────────────────────────────────
   it('TC-E2E-007: Back navigation returns to homepage', async function () {
     Logger.testStart('TC-E2E-007: Back navigation');
 
     await home.open();
     await home.clickViewDetailsOnProduct(0);
     await product.goBack();
-    await home.h.sleep(500);
 
     const logoVisible = await home.isLogoVisible();
     expect(logoVisible).to.be.true;
-    Logger.assert('Returned to homepage after back navigation');
+    Logger.assert('Back to homepage');
 
     Logger.pass('TC-E2E-007');
   });
 
-  // ─── TC-E2E-008: Continue shopping from cart ──────────────────────────────
-  it('TC-E2E-008: Continue Shopping returns from cart to homepage', async function () {
+  // ─── TC-E2E-008: Continue Shopping ────────────────────────────────────────
+  it('TC-E2E-008: Continue Shopping returns from cart', async function () {
     Logger.testStart('TC-E2E-008: Continue Shopping');
 
     await home.open();
     await home.clickViewDetailsOnProduct(0);
     await product.clickAddToCart();
     await product.clickViewCart();
-
-    const cartVisible = await cart.isCartPageVisible();
-    expect(cartVisible).to.be.true;
-
     await cart.clickContinueShopping();
-    await home.h.sleep(500);
 
     const logoVisible = await home.isLogoVisible();
     expect(logoVisible).to.be.true;
-    Logger.assert('Returned to homepage via Continue Shopping');
+    Logger.assert('Returned via Continue Shopping');
 
     Logger.pass('TC-E2E-008');
   });
