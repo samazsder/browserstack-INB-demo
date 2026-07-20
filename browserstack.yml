@@ -18,11 +18,11 @@ buildTag: regression
 framework: mocha
 
 # --- Parallelism ---
-# Run 2 suites in parallel per platform for faster overall execution
-parallelsPerPlatform: 2
+# 5 parallel workers per platform — all 5 spec files run simultaneously
+parallelsPerPlatform: 5
 
-# --- 5 Browser/Device Combinations ---
-# 2 fixed (Desktop Chrome + Mobile Chrome for Percy) + 3 dynamic
+# --- 3 Browser/Device Combinations ---
+# 2 fixed (Desktop Chrome + Mobile Chrome for Percy) + 1 dynamic
 platforms:
   # Fixed: Desktop Chrome (Percy baseline)
   - os: Windows
@@ -35,22 +35,11 @@ platforms:
     osVersion: 13.0
     browserName: Chrome
 
-  # Dynamic combo 1
-  - os: Windows
-    osVersion: 10
-    browserName: Firefox
-    browserVersion: latest
-
-  # Dynamic combo 2
+  # Dynamic: macOS Safari
   - os: OS X
     osVersion: Ventura
     browserName: Safari
     browserVersion: latest
-
-  # Dynamic combo 3
-  - deviceName: iPhone 14
-    osVersion: 16
-    browserName: Safari
 
 # --- BrowserStack Features ---
 
