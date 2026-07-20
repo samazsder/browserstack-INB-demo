@@ -1,0 +1,96 @@
+# ============================================================
+# BrowserStack SDK Configuration
+# FashionStack E2E Test Suite
+# ============================================================
+
+# --- Credentials ---
+userName: anirudhsamazder_Lc6EYx
+accessKey: HDqQPhs2xKu2thnZuUss
+
+# --- Project & Build Metadata ---
+projectName: FashionStack Ecommerce
+buildName: "FashionStack Full Suite - ${BUILD_ID:-local}"
+buildTag: "regression"
+
+# --- Test Framework ---
+framework: mocha
+
+# --- Parallelism ---
+parallelsPerPlatform: 1
+
+# --- 5 Browser/Device Combinations ---
+# 2 fixed (Desktop Chrome + Mobile Chrome for Percy) + 3 dynamic
+browsers:
+  # Fixed: Desktop Chrome (Percy baseline)
+  - browser: chrome
+    browser_version: latest
+    os: Windows
+    os_version: 11
+
+  # Fixed: Mobile Chrome (Percy mobile baseline)
+  - device: Samsung Galaxy S23
+    os_version: 13.0
+    browser: chrome
+    browserName: chrome
+
+  # Dynamic combo 1
+  - browser: firefox
+    browser_version: latest
+    os: Windows
+    os_version: 10
+
+  # Dynamic combo 2
+  - browser: safari
+    browser_version: latest
+    os: OS X
+    os_version: Ventura
+
+  # Dynamic combo 3
+  - device: iPhone 14
+    os_version: 16
+    browser: safari
+    browserName: safari
+
+# --- BrowserStack Features ---
+
+# Test Observability & Reporting (TRA)
+testObservability: true
+testObservabilityOptions:
+  projectName: FashionStack Ecommerce
+  buildName: "FashionStack Full Suite - ${BUILD_ID:-local}"
+
+# Percy Visual Testing
+percy: true
+percyOptions:
+  enabled: true
+
+# Accessibility Testing
+accessibility: true
+accessibilityOptions:
+  wcagVersion: wcag21aa
+  includeIssueType:
+    bestPractice: true
+    needsReview: true
+
+# --- Detailed Logging ---
+debug: true
+networkLogs: true
+consoleLogs: verbose
+seleniumLogs: true
+videoLogs: true
+telemetryLogs: true
+
+# --- Self-Healing ---
+selfHeal: true
+
+# --- Session Settings ---
+sessionName: "FashionStack Test Session"
+idleTimeout: 300
+maskCommands:
+  - setValues
+  - getValues
+  - setCookies
+  - getCookies
+
+# --- Local Testing (disabled for public URL) ---
+browserstackLocal: false

@@ -1,0 +1,32 @@
+{
+  "name": "fashionstack-selenium-nodejs",
+  "version": "1.0.0",
+  "description": "Selenium + Node.js test suite for FashionStack ecommerce app running on BrowserStack Automate",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha 'test/specs/**/*.spec.js' --timeout 60000 --reporter spec",
+    "test:smoke": "mocha 'test/specs/smoke.spec.js' --timeout 60000 --reporter spec",
+    "test:sanity": "mocha 'test/specs/sanity.spec.js' --timeout 60000 --reporter spec",
+    "test:regression": "mocha 'test/specs/**/*.spec.js' --timeout 90000 --reporter spec",
+    "test:e2e": "mocha 'test/specs/e2e.spec.js' --timeout 120000 --reporter spec",
+    "test:flaky": "mocha 'test/specs/flaky.spec.js' --timeout 60000 --reporter spec",
+    "test:browserstack": "browserstack-node-sdk mocha 'test/specs/**/*.spec.js' --timeout 120000 --reporter spec",
+    "test:browserstack:smoke": "browserstack-node-sdk mocha 'test/specs/smoke.spec.js' --timeout 60000 --reporter spec",
+    "test:browserstack:e2e": "browserstack-node-sdk mocha 'test/specs/e2e.spec.js' --timeout 120000 --reporter spec"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.18.1"
+  },
+  "devDependencies": {
+    "browserstack-node-sdk": "^1.0.0",
+    "chai": "^4.4.1",
+    "mocha": "^10.4.0",
+    "mocha-junit-reporter": "^2.2.1",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.3.0",
+    "mochawesome-report-generator": "^6.2.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
