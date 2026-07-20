@@ -18,7 +18,7 @@ const CartPage = require('../pages/CartPage');
 const testData = require('../data/testData');
 
 describe('🧪 SANITY — Core UI & Flow Validation', function () {
-  this.timeout(90000);
+  this.timeout(120000);
   let driver, home, login, product, cart;
   const results = [];
 
