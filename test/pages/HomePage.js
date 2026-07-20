@@ -75,15 +75,35 @@ class HomePage {
 
   async clickViewDetailsOnProduct(index = 0) {
     Logger.step(`Clicking View Details on product index ${index}`);
-    await this.scrollToFeaturedProducts();
-    // "View Details" button text observed in DOM snapshot Step 4 (main-830, main-854, etc.)
-    const btns = await this.driver.findElements(
+    // Scroll progressively to ensure products are loaded
+    await this.h.scrollDown(600);
+    await this.h.sleep(300);
+    await this.h.scrollDown(600);
+    await this.h.sleep(300);
+    await this.h.scrollDown(600);
+    await this.h.sleep(500);
+
+    // "View Details" button text observed in DOM snapshot Step 4
+    let btns = await this.driver.findElements(
       By.xpath("//button[contains(text(),'View Details')]")
     );
-    if (btns.length === 0) throw new Error('No View Details buttons found');
-    await this.h.scrollToElement(btns[index]);
-    await btns[index].click();
-    await this.h.sleep(1000);
+
+    // If not found yet, scroll more and retry
+    if (btns.length === 0) {
+      await this.h.scrollDown(800);
+      await this.h.sleep(500);
+      btns = await this.driver.findElements(
+        By.xpath("//button[contains(text(),'View Details')]")
+      );
+    }
+
+    if (btns.length === 0) throw new Error('No View Details buttons found after scrolling');
+    const targetBtn = btns[index] || btns[0];
+    // Use JS scroll + JS click for mobile reliability
+    await this.driver.executeScript('arguments[0].scrollIntoView({block:"center"})', targetBtn);
+    await this.h.sleep(200);
+    await this.driver.executeScript('arguments[0].click()', targetBtn);
+    await this.h.sleep(500);
   }
 
   async getCartCount() {
