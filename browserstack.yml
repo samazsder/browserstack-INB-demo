@@ -4,8 +4,10 @@
 # ============================================================
 
 # --- Credentials ---
-userName: anirudhsamazder_Lc6EYx
-accessKey: HDqQPhs2xKu2thnZuUss
+# Set these as GitHub Actions secrets: BROWSERSTACK_USERNAME and BROWSERSTACK_ACCESS_KEY
+# For local runs, export them in your shell or create a .env file (never commit .env)
+userName: ${BROWSERSTACK_USERNAME}
+accessKey: ${BROWSERSTACK_ACCESS_KEY}
 
 # --- Project & Build Metadata ---
 projectName: FashionStack Ecommerce
