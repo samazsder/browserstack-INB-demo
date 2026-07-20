@@ -249,15 +249,23 @@ class TestHelpers {
 
   /**
    * Take a Percy visual screenshot (BrowserStack Automate requires percyScreenshot).
+   * Checks isPercyEnabled() first to avoid 401/502 errors on non-Percy sessions.
    * @param {string} name - Snapshot name
    */
   async percySnapshot(name) {
     try {
-      const { percyScreenshot } = require('@percy/selenium-webdriver');
-      await percyScreenshot(this.driver, name);
+      const percyLib = require('@percy/selenium-webdriver');
+      // Only attempt if Percy is enabled for this session
+      const enabled = await percyLib.isPercyEnabled();
+      if (!enabled) {
+        Logger.debug(`Percy not enabled for this session — skipping "${name}"`);
+        return;
+      }
+      await percyLib.percyScreenshot(this.driver, name);
       Logger.percy(name);
     } catch (e) {
-      Logger.warn(`Percy snapshot skipped (${name}): ${e.message}`);
+      // Percy errors are non-fatal — log and continue
+      Logger.warn(`Percy snapshot skipped (${name}): ${e.message?.substring(0, 100)}`);
     }
   }
 
