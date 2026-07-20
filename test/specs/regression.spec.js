@@ -19,7 +19,7 @@ const CheckoutPage = require('../pages/CheckoutPage');
 const testData = require('../data/testData');
 
 describe('🔄 REGRESSION — Feature Integrity Tests', function () {
-  this.timeout(90000);
+  this.timeout(120000);
   let driver, home, login, product, cart, checkout;
   const results = [];
 

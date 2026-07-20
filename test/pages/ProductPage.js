@@ -25,8 +25,10 @@ class ProductPage {
 
   // ─── Selectors ─────────────────────────────────────────────────────────────
 
-  // h1 product name — observed Step 14 DOM snapshot
-  get productTitle()    { return this.h.findByCss('h1'); }
+  // h1 product name — observed Step 14 DOM snapshot ("Essential Cotton Tee")
+  // Page has TWO h1s: "FashionStack" logo in header + product name in main
+  // Use XPath to get the h1 inside main element specifically
+  get productTitle()    { return this.h.findByXpath('//main//h1'); }
   // Back to Products — observed Step 14 DOM snapshot
   get backBtn()         { return this.h.findByText('Back to Products', 'button'); }
   // Size buttons — text observed Step 14 DOM snapshot
@@ -95,8 +97,11 @@ class ProductPage {
     Logger.step('Clicking Add to Cart');
     await this.h.scrollDown(400);
     const btn = await this.addToCartBtn;
-    await this.h.click(btn);
-    await this.h.sleep(1500);
+    // Use JS click to avoid ElementClickInterceptedError from sticky header overlay
+    await this.driver.executeScript('arguments[0].scrollIntoView({block:"center"})', btn);
+    await this.h.sleep(200);
+    await this.driver.executeScript('arguments[0].click()', btn);
+    await this.h.sleep(1000);
   }
 
   async clickViewCart() {
